@@ -1,6 +1,7 @@
 import { Env } from 'src/env';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
@@ -18,6 +19,7 @@ import { PassportModule } from '@nestjs/passport';
 				publicKey: Buffer.from(publicKey, 'base64')
 			};
 		},
-	})]
+	})],
+	providers: [JwtStrategy]
 })
 export class AuthModule {}
