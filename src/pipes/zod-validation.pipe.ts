@@ -1,11 +1,17 @@
 import { ZodError, ZodSchema } from 'zod';
 import { fromZodError } from 'zod-validation-error';
-import { BadRequestException, PipeTransform } from '@nestjs/common';
+import { ArgumentMetadata, BadRequestException, PipeTransform } from '@nestjs/common';
 
 export class ZodValidationPipe implements PipeTransform {
 	constructor(private schema: ZodSchema) {}
 
-	transform(value: any) {
+	transform(value: unknown, metadata: ArgumentMetadata) {
+		// doing this validation, I won't have problems when I use @UsePipes to validate
+		// a @Body, @Param nor @Query with zod
+		if (metadata.type === 'custom') {
+			return value;
+		}
+
 		try {
 			this.schema.parse(value);
 		} catch (error) {

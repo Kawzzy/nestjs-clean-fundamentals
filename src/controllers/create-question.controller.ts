@@ -1,17 +1,36 @@
+import { z } from 'zod';
 import { AuthGuard } from '@nestjs/passport';
 import { UserPayload } from 'src/auth/jwt.strategy';
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CurrentUser } from 'src/auth/current-user.decorator';
+import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
+import { Body, Controller, Post, UseGuards, UsePipes } from '@nestjs/common';
+
+const createQuestionBodySchema = z.object({
+	title: z.string(),
+	content: z.string(),
+});
+
+type CreateQuestionBodySchema = z.infer<typeof createQuestionBodySchema>;
 
 @Controller('/questions')
 @UseGuards(AuthGuard('jwt'))
 export class CreateQuestionController {
-	constructor() {}
-
+	constructor(private prismaConnection: PrismaService) {}
+	
 	@Post()
-	async handle(@CurrentUser() user: UserPayload) {
+	@UsePipes(new ZodValidationPipe(createQuestionBodySchema))
+	async handle(@Body() body: CreateQuestionBodySchema, @CurrentUser() user: UserPayload) {
+		const { title, content } = body;
+		const userId = user.sub;
 
-		user.sub;
-		return 'new question';
+		await this.prismaConnection.question.create({
+			data: {
+				authorId: userId,
+				title,
+				content,
+				slug: 'asd'
+			}
+		});
 	}
 }
