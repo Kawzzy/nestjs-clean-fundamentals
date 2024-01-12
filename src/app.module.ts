@@ -15,7 +15,10 @@ import { FetchRecentQuestionsController } from './controllers/fetch-recent-quest
 			validate: env => envSchema.parse(env),
 			isGlobal: true
 		})],
-	controllers: [CreateAccountController, AuthenticateController, CreateQuestionController,
+	controllers: [
+		CreateAccountController,
+		AuthenticateController,
+		CreateQuestionController,
 		FetchRecentQuestionsController],
 	providers: [PrismaService],
 })
