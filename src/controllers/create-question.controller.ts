@@ -29,7 +29,7 @@ export class CreateQuestionController {
 				authorId: userId,
 				title,
 				content,
-				slug: 'asd'
+				slug: 'asdf'
 			}
 		});
 	}
