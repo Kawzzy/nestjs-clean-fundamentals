@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Env } from 'src/env';
+import { Env } from '@/env';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AuthGuard } from '@nestjs/passport';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
+import { PrismaService } from '@/prisma/prisma.service';
+import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 
 const pageValidationParamSchema = z.string().optional().default('1').transform(Number).pipe(z.number().min(1));
