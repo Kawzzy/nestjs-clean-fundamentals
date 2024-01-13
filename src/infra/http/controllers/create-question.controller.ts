@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AuthGuard } from '@nestjs/passport';
 import { UserPayload } from '@/infra/auth/jwt.strategy';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { CurrentUser } from '@/infra/auth/current-user.decorator';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 import { Body, Controller, Post, UseGuards, UsePipes } from '@nestjs/common';

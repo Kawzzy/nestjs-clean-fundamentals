@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '@/infra/prisma/prisma.service';
+import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 import { Body, Controller, Post, UnauthorizedException, UsePipes } from '@nestjs/common';
 
