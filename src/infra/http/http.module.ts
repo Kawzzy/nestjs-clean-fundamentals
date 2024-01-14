@@ -7,6 +7,7 @@ import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/crea
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
+import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 
 @Module({
 	imports: [DatabaseModule],
@@ -21,6 +22,13 @@ import { PrismaQuestionsRepository } from '../database/prisma/repositories/prism
 			provide: CreateQuestionUseCase,
 			useFactory: (questionsRepository: QuestionsRepository) => {
 				return new CreateQuestionUseCase(questionsRepository);
+			},
+			inject: [PrismaQuestionsRepository]
+		},
+		{
+			provide: FetchRecentQuestionsUseCase,
+			useFactory: (questionsRepository: QuestionsRepository) => {
+				return new FetchRecentQuestionsUseCase(questionsRepository);
 			},
 			inject: [PrismaQuestionsRepository]
 		}
