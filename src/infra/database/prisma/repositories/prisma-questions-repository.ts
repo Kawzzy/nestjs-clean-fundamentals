@@ -21,22 +21,53 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
 	}
 
 	async findBySlug(slug: string): Promise<Question | null> {
-		throw new Error('Method not implemented.');
+		const question = await this.prismaConnection.question.findUnique({
+			where: {
+				slug
+			}
+		});
+
+		return question ? PrismaQuestionMapper.toDomain(question) : null;
 	}
 
-	async findManyRecent(params: PaginationParams): Promise<Question[]> {
-		throw new Error('Method not implemented.');
+	async findManyRecent({ page }: PaginationParams): Promise<Question[]> {
+		const questions = await this.prismaConnection.question.findMany({
+			orderBy: {
+				createdAt: 'desc'
+			},
+			take: 20,
+			skip: (page - 1) * 20
+		});
+
+		return questions.map(PrismaQuestionMapper.toDomain);
 	}
 
 	async save(question: Question): Promise<void> {
-		throw new Error('Method not implemented.');
+		const data = PrismaQuestionMapper.toPrisma(question);
+	
+		await this.prismaConnection.question.update({
+			where: {
+				id: data.id
+			},
+			data
+		});
 	}
-
+	
 	async create(question: Question): Promise<void> {
-		throw new Error('Method not implemented.');
+		const data = PrismaQuestionMapper.toPrisma(question);
+	
+		await this.prismaConnection.question.create({
+			data
+		});
 	}
 
 	async delete(question: Question): Promise<void> {
-		throw new Error('Method not implemented.');
+		const data = PrismaQuestionMapper.toPrisma(question);
+	
+		await this.prismaConnection.question.delete({
+			where: {
+				id: data.id
+			}
+		});
 	}
 }
