@@ -1,10 +1,9 @@
 import { z } from 'zod';
-import { AuthGuard } from '@nestjs/passport';
 import { UserPayload } from '@/infra/auth/jwt.strategy';
 import { CurrentUser } from '@/infra/auth/current-user.decorator';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
+import { BadRequestException, Body, Controller, Post, UsePipes } from '@nestjs/common';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
-import { BadRequestException, Body, Controller, Post, UseGuards, UsePipes } from '@nestjs/common';
 
 const createQuestionBodySchema = z.object({
 	title: z.string(),
@@ -14,7 +13,6 @@ const createQuestionBodySchema = z.object({
 type CreateQuestionBodySchema = z.infer<typeof createQuestionBodySchema>;
 
 @Controller('/questions')
-@UseGuards(AuthGuard('jwt'))
 export class CreateQuestionController {
 	constructor(private createQuestion: CreateQuestionUseCase) {}
 	
