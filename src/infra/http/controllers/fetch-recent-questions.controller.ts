@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { AuthGuard } from '@nestjs/passport';
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
 import { HttpQuestionPresenter } from '../presenters/http-question-presenter';
+import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 
 const pageValidationParamSchema = z.string().optional().default('1').transform(Number).pipe(z.number().min(1));
@@ -24,7 +24,7 @@ export class FetchRecentQuestionsController {
 		});
 
 		if (result.isLeft()) {
-			throw new Error();
+			throw new BadRequestException();
 		}
 
 		const questions = result.value.questions;
