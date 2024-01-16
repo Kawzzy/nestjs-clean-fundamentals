@@ -1,8 +1,8 @@
 import request from 'supertest';
 
 import { Test } from '@nestjs/testing';
-import { AppModule } from '@/infra/app.module';
 import { JwtService } from '@nestjs/jwt';
+import { AppModule } from '@/infra/app.module';
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
 

@@ -9,11 +9,13 @@ import { CreateAccountController } from './controllers/create-account.controller
 import { CreateQuestionController } from './controllers/create-question.controller';
 import { HashComparer } from '@/domain/forum/application/cryptography/hash-comparer';
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
+import { GetQuestionBySlugController } from './controllers/get-question-by-slug.controller';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug';
 import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma-students-repository';
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
@@ -28,7 +30,8 @@ import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-case
 		AuthenticateController,
 		CreateAccountController,
 		CreateQuestionController,
-		FetchRecentQuestionsController
+		GetQuestionBySlugController,
+		FetchRecentQuestionsController,
 	],
 	providers: [
 		{
@@ -58,6 +61,13 @@ import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-case
 				return new RegisterStudentUseCase(studentsRepository, hashGenerator);
 			},
 			inject: [PrismaStudentsRepository, BcryptHasher]
+		},
+		{
+			provide: GetQuestionBySlugUseCase,
+			useFactory: (questionsRepository: QuestionsRepository) => {
+				return new GetQuestionBySlugUseCase(questionsRepository);
+			},
+			inject: [PrismaQuestionsRepository]
 		}
 	]
 })

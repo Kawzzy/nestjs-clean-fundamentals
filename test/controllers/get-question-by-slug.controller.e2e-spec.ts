@@ -6,7 +6,7 @@ import { AppModule } from '@/infra/app.module';
 import { INestApplication } from '@nestjs/common';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
 
-describe('Fetch recent questions (E2E)', () => {
+describe('Get question by slug (E2E)', () => {
 	let app: INestApplication;
 	let prismaConnection: PrismaService;
 	let jwt: JwtService;
@@ -24,7 +24,7 @@ describe('Fetch recent questions (E2E)', () => {
 		await app.init();
 	});
 
-	test('[GET] /questions', async () => {
+	test('[GET] /questions/:slug', async () => {
 
 		const user = await prismaConnection.user.create({
 			data: {
@@ -36,41 +36,25 @@ describe('Fetch recent questions (E2E)', () => {
 
 		const accessToken = jwt.sign({ sub: user.id });
 
-		await prismaConnection.question.createMany({
-			data: [
-				{
-					authorId: user.id,
-					title: 'Question1',
-					slug: 'question1',
-					content: 'question content 1'
-				},
-				{
-					authorId: user.id,
-					title: 'Question2',
-					slug: 'question2',
-					content: 'question content 2'
-				},
-				{
-					authorId: user.id,
-					title: 'Question3',
-					slug: 'question3',
-					content: 'question content 3'
-				},
-			]
+		const slug = 'question1';
+
+		await prismaConnection.question.create({
+			data: {
+				authorId: user.id,
+				title: 'Question1',
+				slug,
+				content: 'question content 1'
+			}
 		});
 
 		const response = await request(app.getHttpServer())
-			.get('/questions')
+			.get(`/questions/${slug}`)
 			.set('Authorization', `Bearer ${accessToken}`)
 			.send();
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toEqual({
-			questions: [
-				expect.objectContaining({ title: 'Question1'}),
-				expect.objectContaining({ title: 'Question2'}),
-				expect.objectContaining({ title: 'Question3'})
-			]
+			question: expect.objectContaining({ title: 'Question1'})
 		});
 	});
 });
