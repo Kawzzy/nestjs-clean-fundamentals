@@ -5,10 +5,12 @@ import { BcryptHasher } from '../cryptography/bcrypt-hasher';
 import { CryptographyModule } from '../cryptography/cryptography.module';
 import { Encrypter } from '@/domain/forum/application/cryptography/encrypter';
 import { AuthenticateController } from './controllers/authenticate.controller';
+import { EditQuestionController } from './controllers/edit-question.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CreateQuestionController } from './controllers/create-question.controller';
 import { HashComparer } from '@/domain/forum/application/cryptography/hash-comparer';
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
+import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { GetQuestionBySlugController } from './controllers/get-question-by-slug.controller';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
@@ -20,6 +22,8 @@ import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
+import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
+import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
 
 @Module({
 	imports: [
@@ -28,10 +32,11 @@ import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-case
 	],
 	controllers: [
 		AuthenticateController,
+		EditQuestionController,
 		CreateAccountController,
 		CreateQuestionController,
 		GetQuestionBySlugController,
-		FetchRecentQuestionsController,
+		FetchRecentQuestionsController
 	],
 	providers: [
 		{
@@ -68,6 +73,16 @@ import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-case
 				return new GetQuestionBySlugUseCase(questionsRepository);
 			},
 			inject: [PrismaQuestionsRepository]
+		},
+		{
+			provide: EditQuestionUseCase,
+			useFactory: (
+				questionsRepository: QuestionsRepository,
+				questionAttachmentRepository: QuestionAttachmentsRepository
+			) => {
+				return new EditQuestionUseCase(questionsRepository, questionAttachmentRepository);
+			},
+			inject: [PrismaQuestionsRepository, PrismaQuestionAttachmentsRepository]
 		}
 	]
 })

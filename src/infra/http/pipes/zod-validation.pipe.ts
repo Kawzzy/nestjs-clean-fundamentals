@@ -8,12 +8,12 @@ export class ZodValidationPipe implements PipeTransform {
 	transform(value: unknown, metadata: ArgumentMetadata) {
 		// doing this validation, I won't have problems when I use @UsePipes to validate
 		// a @Body, @Param nor @Query with zod
-		if (metadata.type === 'custom') {
+		if (metadata.type === 'custom' || metadata.type === 'param') {
 			return value;
 		}
-
+		
 		try {
-			return this.schema.parse(value);
+			value = this.schema.parse(value);
 		} catch (error) {
 			if (error instanceof ZodError) {
 				throw new BadRequestException({
