@@ -20,7 +20,6 @@ export class EditQuestionController {
     @HttpCode(204)
 	@UsePipes(new ZodValidationPipe(editQuestionBodySchema))
 	async handle(@Body() body: EditQuestionBodySchema, @CurrentUser() user: UserPayload, @Param('id') questionId: string) {
-		console.log('bateu aqui');
 		const { title, content } = body;
 		const userId = user.sub;
 

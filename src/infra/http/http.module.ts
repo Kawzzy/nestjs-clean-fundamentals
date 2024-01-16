@@ -8,11 +8,13 @@ import { AuthenticateController } from './controllers/authenticate.controller';
 import { EditQuestionController } from './controllers/edit-question.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CreateQuestionController } from './controllers/create-question.controller';
+import { DeleteQuestionController } from './controllers/delete-question.controller';
 import { HashComparer } from '@/domain/forum/application/cryptography/hash-comparer';
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { GetQuestionBySlugController } from './controllers/get-question-by-slug.controller';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
+import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
@@ -35,6 +37,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		EditQuestionController,
 		CreateAccountController,
 		CreateQuestionController,
+		DeleteQuestionController,
 		GetQuestionBySlugController,
 		FetchRecentQuestionsController
 	],
@@ -45,36 +48,31 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new CreateQuestionUseCase(questionsRepository);
 			},
 			inject: [PrismaQuestionsRepository]
-		},
-		{
+		}, {
 			provide: FetchRecentQuestionsUseCase,
 			useFactory: (questionsRepository: QuestionsRepository) => {
 				return new FetchRecentQuestionsUseCase(questionsRepository);
 			},
 			inject: [PrismaQuestionsRepository]
-		},
-		{
+		}, {
 			provide: AuthenticateStudentUseCase,
 			useFactory: (studentsRepository: StudentsRepository, hashComparer: HashComparer, encrypter: Encrypter) => {
 				return new AuthenticateStudentUseCase(studentsRepository, hashComparer, encrypter);
 			},
 			inject: [PrismaStudentsRepository, BcryptHasher, JwtEncrypter]
-		},
-		{
+		}, {
 			provide: RegisterStudentUseCase,
 			useFactory: (studentsRepository: StudentsRepository, hashGenerator: HashGenerator) => {
 				return new RegisterStudentUseCase(studentsRepository, hashGenerator);
 			},
 			inject: [PrismaStudentsRepository, BcryptHasher]
-		},
-		{
+		}, {
 			provide: GetQuestionBySlugUseCase,
 			useFactory: (questionsRepository: QuestionsRepository) => {
 				return new GetQuestionBySlugUseCase(questionsRepository);
 			},
 			inject: [PrismaQuestionsRepository]
-		},
-		{
+		}, {
 			provide: EditQuestionUseCase,
 			useFactory: (
 				questionsRepository: QuestionsRepository,
@@ -83,6 +81,12 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new EditQuestionUseCase(questionsRepository, questionAttachmentRepository);
 			},
 			inject: [PrismaQuestionsRepository, PrismaQuestionAttachmentsRepository]
+		}, {
+			provide: DeleteQuestionUseCase,
+			useFactory: (questionsRepository: QuestionsRepository) => {
+				return new DeleteQuestionUseCase(questionsRepository);
+			},
+			inject: [PrismaQuestionsRepository]
 		}
 	]
 })
