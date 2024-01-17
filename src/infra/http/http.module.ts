@@ -34,6 +34,8 @@ import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
+import { ChooseQuestionBestAnswerController } from './controllers/choose-question-best-answer.controller';
+import { ChooseQuestionBestAnswerUseCase } from '@/domain/forum/application/use-cases/choose-question-best-answer';
 import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository';
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
@@ -55,7 +57,8 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		DeleteQuestionController,
 		GetQuestionBySlugController,
 		FetchQuestionAnswersController,
-		FetchRecentQuestionsController
+		FetchRecentQuestionsController,
+		ChooseQuestionBestAnswerController
 	],
 	providers: [
 		{
@@ -130,6 +133,15 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new FetchQuestionAnswersUseCase(answersRepository);
 			},
 			inject: [PrismaAnswersRepository]
+		}, {
+			provide: ChooseQuestionBestAnswerUseCase,
+			useFactory: (
+				questionsRepository: QuestionsRepository,
+				answersRepository: AnswersRepository
+			) => {
+				return new ChooseQuestionBestAnswerUseCase(questionsRepository, answersRepository);
+			},
+			inject: [PrismaQuestionsRepository, PrismaAnswersRepository]
 		}
 	]
 })
