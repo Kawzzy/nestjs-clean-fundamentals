@@ -30,6 +30,10 @@ import { PrismaQuestionsRepository } from '../database/prisma/repositories/prism
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
+import { EditAnswerController } from './controllers/edit-answer.controller';
+import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer';
+import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository';
+import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
 
 @Module({
 	imports: [
@@ -37,6 +41,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		CryptographyModule
 	],
 	controllers: [
+		EditAnswerController,
 		AuthenticateController,
 		EditQuestionController,
 		CreateAccountController,
@@ -98,6 +103,15 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new AnswerQuestionUseCase(answersRepository);
 			},
 			inject: [PrismaAnswersRepository]
+		}, {
+			provide: EditAnswerUseCase,
+			useFactory: (
+				answersRepository: AnswersRepository,
+				answerAttachmentsRepository: AnswerAttachmentsRepository
+			) => {
+				return new EditAnswerUseCase(answersRepository, answerAttachmentsRepository);
+			},
+			inject: [PrismaAnswersRepository, PrismaAnswerAttachmentsRepository]
 		}
 	]
 })
