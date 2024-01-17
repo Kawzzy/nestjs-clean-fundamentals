@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { StorageModule } from '../storage/storage.module';
 import { DatabaseModule } from '../database/database.module';
 import { JwtEncrypter } from '../cryptography/jwt-encrypter';
 import { BcryptHasher } from '../cryptography/bcrypt-hasher';
@@ -16,6 +17,7 @@ import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-ans
 import { HashComparer } from '@/domain/forum/application/cryptography/hash-comparer';
 import { CommentOnAnswerController } from './controllers/comment-on-answer.controller';
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
+import { UploadAttachmentController } from './controllers/upload-attachment.controller';
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
 import { CommentOnQuestionController } from './controllers/comment-on-question.controller';
@@ -56,10 +58,10 @@ import { PrismaQuestionCommentRepository } from '../database/prisma/repositories
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
 import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
-import { UploadAttachmentController } from './controllers/upload-attachment.controller';
 
 @Module({
 	imports: [
+		StorageModule,
 		DatabaseModule,
 		CryptographyModule
 	],
