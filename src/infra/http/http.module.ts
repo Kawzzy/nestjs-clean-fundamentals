@@ -26,11 +26,13 @@ import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/dele
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
 import { DeleteAnswerCommentController } from './controllers/delete-answer-comment.controller';
+import { FetchAnswerCommentsController } from './controllers/fetch-answer-comments.controller';
 import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer';
 import { FetchQuestionAnswersController } from './controllers/fetch-question-answers.controller';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
 import { DeleteQuestionCommentController } from './controllers/delete-question-comment.controller';
+import { FetchQuestionCommentsController } from './controllers/fetch-question-comments.controller';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
 import { CommentOnQuestionUseCase } from '@/domain/forum/application/use-cases/comment-on-question';
 import { PrismaAnswersRepository } from '../database/prisma/repositories/prisma-answers-repository';
@@ -38,11 +40,13 @@ import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/g
 import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma-students-repository';
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student';
 import { DeleteAnswerCommentUseCase } from '@/domain/forum/application/use-cases/delete-answer-comment';
+import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-comments';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 import { ChooseQuestionBestAnswerController } from './controllers/choose-question-best-answer.controller';
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment';
+import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments';
 import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository';
 import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository';
 import { ChooseQuestionBestAnswerUseCase } from '@/domain/forum/application/use-cases/choose-question-best-answer';
@@ -52,8 +56,6 @@ import { PrismaQuestionCommentRepository } from '../database/prisma/repositories
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
 import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
-import { FetchQuestionCommentsController } from './controllers/fetch-question-comments.controller';
-import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments';
 
 @Module({
 	imports: [
@@ -73,6 +75,7 @@ import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cas
 		CommentOnQuestionController,
 		GetQuestionBySlugController,
 		DeleteAnswerCommentController,
+		FetchAnswerCommentsController,
 		FetchQuestionAnswersController,
 		FetchRecentQuestionsController,
 		DeleteQuestionCommentController,
@@ -197,6 +200,12 @@ import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cas
 				return new FetchQuestionCommentsUseCase(questionCommentsRepository);
 			},
 			inject: [PrismaQuestionCommentRepository]
+		}, {
+			provide: FetchAnswerCommentsUseCase,
+			useFactory: (answerCommentsRepository: AnswerCommentsRepository) => {
+				return new FetchAnswerCommentsUseCase(answerCommentsRepository);
+			},
+			inject: [PrismaAnswerCommentsRepository]
 		}
 	]
 })

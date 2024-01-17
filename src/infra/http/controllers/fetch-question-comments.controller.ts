@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { CommentPresenter } from '../presenters/comment-presenter';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
+import { CommentPresenter } from '../presenters/comment-presenter';
 import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
 import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments';
 
