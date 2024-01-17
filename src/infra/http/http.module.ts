@@ -56,6 +56,7 @@ import { PrismaQuestionCommentRepository } from '../database/prisma/repositories
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
 import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
+import { UploadAttachmentController } from './controllers/upload-attachment.controller';
 
 @Module({
 	imports: [
@@ -72,6 +73,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		AnswerQuestionController,
 		DeleteQuestionController,
 		CommentOnAnswerController,
+		UploadAttachmentController,
 		CommentOnQuestionController,
 		GetQuestionBySlugController,
 		DeleteAnswerCommentController,
