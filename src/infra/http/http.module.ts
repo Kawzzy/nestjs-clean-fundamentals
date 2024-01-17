@@ -23,6 +23,7 @@ import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/crea
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
+import { FetchQuestionAnswersController } from './controllers/fetch-question-answers.controller';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
@@ -31,11 +32,12 @@ import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/g
 import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma-students-repository';
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
+import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
-import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
-import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
 import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository';
+import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
+import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
 
 @Module({
 	imports: [
@@ -52,6 +54,7 @@ import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositori
 		AnswerQuestionController,
 		DeleteQuestionController,
 		GetQuestionBySlugController,
+		FetchQuestionAnswersController,
 		FetchRecentQuestionsController
 	],
 	providers: [
@@ -119,6 +122,12 @@ import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositori
 			provide: DeleteAnswerUseCase,
 			useFactory: (answersRepository: AnswersRepository) => {
 				return new DeleteAnswerUseCase(answersRepository);
+			},
+			inject: [PrismaAnswersRepository]
+		}, {
+			provide: FetchQuestionAnswersUseCase,
+			useFactory: (answersRepository: AnswersRepository) => {
+				return new FetchQuestionAnswersUseCase(answersRepository);
 			},
 			inject: [PrismaAnswersRepository]
 		}
