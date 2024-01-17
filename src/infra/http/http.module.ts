@@ -52,6 +52,8 @@ import { PrismaQuestionCommentRepository } from '../database/prisma/repositories
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
 import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
+import { FetchQuestionCommentsController } from './controllers/fetch-question-comments.controller';
+import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments';
 
 @Module({
 	imports: [
@@ -74,6 +76,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		FetchQuestionAnswersController,
 		FetchRecentQuestionsController,
 		DeleteQuestionCommentController,
+		FetchQuestionCommentsController,
 		ChooseQuestionBestAnswerController
 	],
 	providers: [
@@ -188,6 +191,12 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new DeleteAnswerCommentUseCase(answerCommentsRepository);
 			},
 			inject: [PrismaAnswerCommentsRepository]
+		}, {
+			provide: FetchQuestionCommentsUseCase,
+			useFactory: (questionCommentsRepository: QuestionCommentsRepository) => {
+				return new FetchQuestionCommentsUseCase(questionCommentsRepository);
+			},
+			inject: [PrismaQuestionCommentRepository]
 		}
 	]
 })
