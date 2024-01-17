@@ -25,6 +25,7 @@ import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/crea
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
+import { DeleteAnswerCommentController } from './controllers/delete-answer-comment.controller';
 import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer';
 import { FetchQuestionAnswersController } from './controllers/fetch-question-answers.controller';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
@@ -36,6 +37,7 @@ import { PrismaAnswersRepository } from '../database/prisma/repositories/prisma-
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug';
 import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma-students-repository';
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student';
+import { DeleteAnswerCommentUseCase } from '@/domain/forum/application/use-cases/delete-answer-comment';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
@@ -68,6 +70,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		CommentOnAnswerController,
 		CommentOnQuestionController,
 		GetQuestionBySlugController,
+		DeleteAnswerCommentController,
 		FetchQuestionAnswersController,
 		FetchRecentQuestionsController,
 		DeleteQuestionCommentController,
@@ -179,6 +182,12 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new CommentOnAnswerUseCase(answersRepository, answerCommentsRepository);
 			},
 			inject: [PrismaAnswersRepository, PrismaAnswerCommentsRepository]
+		}, {
+			provide: DeleteAnswerCommentUseCase,
+			useFactory: (answerCommentsRepository: AnswerCommentsRepository) => {
+				return new DeleteAnswerCommentUseCase(answerCommentsRepository);
+			},
+			inject: [PrismaAnswerCommentsRepository]
 		}
 	]
 })
