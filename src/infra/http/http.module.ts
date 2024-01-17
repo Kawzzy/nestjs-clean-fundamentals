@@ -7,18 +7,22 @@ import { Encrypter } from '@/domain/forum/application/cryptography/encrypter';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { EditQuestionController } from './controllers/edit-question.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
+import { AnswerQuestionController } from './controllers/answer-question.controller';
 import { CreateQuestionController } from './controllers/create-question.controller';
 import { DeleteQuestionController } from './controllers/delete-question.controller';
 import { HashComparer } from '@/domain/forum/application/cryptography/hash-comparer';
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { GetQuestionBySlugController } from './controllers/get-question-by-slug.controller';
+import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { PrismaAnswersRepository } from '../database/prisma/repositories/prisma-answers-repository';
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug';
 import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma-students-repository';
 import { AuthenticateStudentUseCase } from '@/domain/forum/application/use-cases/authenticate-student';
@@ -37,6 +41,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		EditQuestionController,
 		CreateAccountController,
 		CreateQuestionController,
+		AnswerQuestionController,
 		DeleteQuestionController,
 		GetQuestionBySlugController,
 		FetchRecentQuestionsController
@@ -87,6 +92,12 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new DeleteQuestionUseCase(questionsRepository);
 			},
 			inject: [PrismaQuestionsRepository]
+		}, {
+			provide: AnswerQuestionUseCase,
+			useFactory: (answersRepository: AnswersRepository) => {
+				return new AnswerQuestionUseCase(answersRepository);
+			},
+			inject: [PrismaAnswersRepository]
 		}
 	]
 })
