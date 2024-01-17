@@ -17,6 +17,7 @@ import { HashComparer } from '@/domain/forum/application/cryptography/hash-compa
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
+import { CommentOnQuestionController } from './controllers/comment-on-question.controller';
 import { GetQuestionBySlugController } from './controllers/get-question-by-slug.controller';
 import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question';
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question';
@@ -27,6 +28,7 @@ import { FetchQuestionAnswersController } from './controllers/fetch-question-ans
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { CommentOnQuestionUseCase } from '@/domain/forum/application/use-cases/comment-on-question';
 import { PrismaAnswersRepository } from '../database/prisma/repositories/prisma-answers-repository';
 import { GetQuestionBySlugUseCase } from '@/domain/forum/application/use-cases/get-question-by-slug';
 import { PrismaStudentsRepository } from '../database/prisma/repositories/prisma-students-repository';
@@ -35,8 +37,10 @@ import { PrismaQuestionsRepository } from '../database/prisma/repositories/prism
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 import { ChooseQuestionBestAnswerController } from './controllers/choose-question-best-answer.controller';
+import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository';
 import { ChooseQuestionBestAnswerUseCase } from '@/domain/forum/application/use-cases/choose-question-best-answer';
 import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository';
+import { PrismaQuestionCommentRepository } from '../database/prisma/repositories/prisma-question-comments-repository';
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
 import { PrismaAnswerAttachmentsRepository } from '../database/prisma/repositories/prisma-answer-attachments-repository';
 import { PrismaQuestionAttachmentsRepository } from '../database/prisma/repositories/prisma-question-attachments-repository';
@@ -55,6 +59,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		CreateQuestionController,
 		AnswerQuestionController,
 		DeleteQuestionController,
+		CommentOnQuestionController,
 		GetQuestionBySlugController,
 		FetchQuestionAnswersController,
 		FetchRecentQuestionsController,
@@ -142,6 +147,15 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new ChooseQuestionBestAnswerUseCase(questionsRepository, answersRepository);
 			},
 			inject: [PrismaQuestionsRepository, PrismaAnswersRepository]
+		}, {
+			provide: CommentOnQuestionUseCase,
+			useFactory: (
+				questionsRepository: QuestionsRepository,
+				questionCommentsRepository: QuestionCommentsRepository
+			) => {
+				return new CommentOnQuestionUseCase(questionsRepository, questionCommentsRepository);
+			},
+			inject: [PrismaQuestionsRepository, PrismaQuestionCommentRepository]
 		}
 	]
 })
