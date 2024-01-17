@@ -14,6 +14,7 @@ import { CreateQuestionController } from './controllers/create-question.controll
 import { DeleteQuestionController } from './controllers/delete-question.controller';
 import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer';
 import { HashComparer } from '@/domain/forum/application/cryptography/hash-comparer';
+import { CommentOnAnswerController } from './controllers/comment-on-answer.controller';
 import { HashGenerator } from '@/domain/forum/application/cryptography/hash-generator';
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question';
 import { DeleteAnswerUseCase } from '@/domain/forum/application/use-cases/delete-answer';
@@ -24,6 +25,7 @@ import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/crea
 import { DeleteQuestionUseCase } from '@/domain/forum/application/use-cases/delete-question';
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student';
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository';
+import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer';
 import { FetchQuestionAnswersController } from './controllers/fetch-question-answers.controller';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
@@ -39,8 +41,10 @@ import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-case
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 import { ChooseQuestionBestAnswerController } from './controllers/choose-question-best-answer.controller';
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment';
+import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository';
 import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository';
 import { ChooseQuestionBestAnswerUseCase } from '@/domain/forum/application/use-cases/choose-question-best-answer';
+import { PrismaAnswerCommentsRepository } from '../database/prisma/repositories/prisma-answer-comments-repository';
 import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository';
 import { PrismaQuestionCommentRepository } from '../database/prisma/repositories/prisma-question-comments-repository';
 import { QuestionAttachmentsRepository } from '@/domain/forum/application/repositories/question-attachments-repository';
@@ -61,6 +65,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 		CreateQuestionController,
 		AnswerQuestionController,
 		DeleteQuestionController,
+		CommentOnAnswerController,
 		CommentOnQuestionController,
 		GetQuestionBySlugController,
 		FetchQuestionAnswersController,
@@ -165,6 +170,15 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new DeleteQuestionCommentUseCase(questionCommentsRepository);
 			},
 			inject: [PrismaQuestionCommentRepository]
+		}, {
+			provide: CommentOnAnswerUseCase,
+			useFactory: (
+				answersRepository: AnswersRepository,
+				answerCommentsRepository: AnswerCommentsRepository
+			) => {
+				return new CommentOnAnswerUseCase(answersRepository, answerCommentsRepository);
+			},
+			inject: [PrismaAnswersRepository, PrismaAnswerCommentsRepository]
 		}
 	]
 })
