@@ -7,6 +7,7 @@ import { BadRequestException, Body, Controller, Param, Post, UsePipes } from '@n
 
 const answerQuestionBodySchema = z.object({
 	content: z.string(),
+	attachmentsIds: z.array(z.string().uuid())
 });
 
 type AnswerQuestionBodySchema = z.infer<typeof answerQuestionBodySchema>;
@@ -18,14 +19,14 @@ export class AnswerQuestionController {
     @Post()
     @UsePipes(new ZodValidationPipe(answerQuestionBodySchema))
 	async handle(@Body() body: AnswerQuestionBodySchema, @CurrentUser() user: UserPayload, @Param('questionId') questionId: string) {
-		const { content } = body;
+		const { content, attachmentsIds } = body;
 		const userId = user.sub;
 
 		const result = await this.answerQuestion.execute({
 			content,
 			questionId,
 			authorId: userId,
-			attachmentsIds: []
+			attachmentsIds
 		});
         
 		if (result.isLeft()) {

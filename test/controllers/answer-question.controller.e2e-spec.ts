@@ -7,6 +7,7 @@ import { INestApplication } from '@nestjs/common';
 import { StudentFactory } from 'test/factories/make-student';
 import { QuestionFactory } from 'test/factories/make-question';
 import { DatabaseModule } from '@/infra/database/database.module';
+import { AttachmentFactory } from 'test/factories/make-attachment';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
 
 describe('Answer question (E2E)', () => {
@@ -15,6 +16,7 @@ describe('Answer question (E2E)', () => {
 	let jwt: JwtService;
 	let studentFactory: StudentFactory;
 	let questionFactory: QuestionFactory;
+	let attachmentFactory: AttachmentFactory;
 
 	beforeAll(async () => {
 		const moduleRef = await Test.createTestingModule({
@@ -24,7 +26,8 @@ describe('Answer question (E2E)', () => {
 			],
 			providers: [
 				StudentFactory,
-				QuestionFactory
+				QuestionFactory,
+				AttachmentFactory
 			]
 		}).compile();
 
@@ -34,6 +37,7 @@ describe('Answer question (E2E)', () => {
 		jwt = moduleRef.get(JwtService);
 		studentFactory = moduleRef.get(StudentFactory);
 		questionFactory = moduleRef.get(QuestionFactory);
+		attachmentFactory= moduleRef.get(AttachmentFactory);
 
 		await app.init();
 	});
@@ -50,11 +54,15 @@ describe('Answer question (E2E)', () => {
 
 		const questionId = question.id.toString();
 
+		const attachment1 = await attachmentFactory.makePrismaAttachment();
+		const attachment2 = await attachmentFactory.makePrismaAttachment();
+
 		const response = await request(app.getHttpServer())
 			.post(`/questions/${questionId}/answers`)
 			.set('Authorization', `Bearer ${accessToken}`)
 			.send({
-				content: 'New answer'
+				content: 'New answer',
+				attachmentsIds: [attachment1.id.toString(), attachment2.id.toString()]
 			});
 
 		expect(response.statusCode).toBe(201);
@@ -66,5 +74,13 @@ describe('Answer question (E2E)', () => {
 		});
 
 		expect(answerQuestionOnDatabase).toBeTruthy();
+
+		const attachmentsOnDatabase = await prismaConnection.attachment.findMany({
+			where: {
+				answerId: answerQuestionOnDatabase?.id
+			}
+		});
+
+		expect(attachmentsOnDatabase).toHaveLength(2);
 	});
 });

@@ -7,26 +7,27 @@ import { BadRequestException, Body, Controller, HttpCode, Param, Put, UsePipes }
 
 const editAnswerBodySchema = z.object({
 	content: z.string(),
+	attachmentsIds: z.array(z.string().uuid())
 });
 
 type EditAnswerBodySchema = z.infer<typeof editAnswerBodySchema>;
 
 @Controller('/answers/:id')
 export class EditAnswerController {
-	constructor(private editQuestion: EditAnswerUseCase) {}
+	constructor(private editAnswer: EditAnswerUseCase) {}
 	
 	@Put()
     @HttpCode(204)
 	@UsePipes(new ZodValidationPipe(editAnswerBodySchema))
 	async handle(@Body() body: EditAnswerBodySchema, @CurrentUser() user: UserPayload, @Param('id') answerId: string) {
-		const { content } = body;
+		const { content, attachmentsIds } = body;
 		const userId = user.sub;
 
-		const result = await this.editQuestion.execute({
+		const result = await this.editAnswer.execute({
 			content,
 			answerId,
 			authorId: userId,
-			attachmentsIds: [],
+			attachmentsIds
 		});
 
 		if (result.isLeft()) {

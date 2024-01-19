@@ -4,10 +4,8 @@ import {
 	QuestionAttachment,
 	QuestionAttachmentProps,
 } from '@/domain/forum/enterprise/entities/question-attachment';
-import { PrismaAttachmentsMapper } from '@/infra/database/prisma/mappers/prisma-attachment.mapper';
 import { PrismaService } from '@/infra/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { makeAttachment } from './make-attachment';
 
 export function makeQuestionAttachment(
 	override: Partial<QuestionAttachmentProps> = {},
