@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation.pipe';
-import { CommentPresenter } from '../presenters/comment-presenter';
 import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
+import { CommentWithAuthorPresenter } from '../presenters/comment-with-author-presenter';
 import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments';
 
 const pageValidationParamSchema = z.string().optional().default('1').transform(Number).pipe(z.number().min(1));
@@ -26,8 +26,8 @@ export class FetchQuestionCommentsController {
 			throw new BadRequestException();
 		}
 
-		const questionComments = result.value.questionComments;
+		const comments = result.value.comments;
 
-		return { answers: questionComments.map(CommentPresenter.toHTTP) };
+		return { answers: comments.map(CommentWithAuthorPresenter.toHTTP) };
 	}
 }
