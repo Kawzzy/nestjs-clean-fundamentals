@@ -1,11 +1,14 @@
 import { PaginationParams } from '@/core/repositories/pagination-params';
-import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository';
+import { InMemoryStudentsRepository } from './in-memory-students-repository';
 import { AnswerComment } from '@/domain/forum/enterprise/entities/answer-comment';
+import { CommentWithAuthor } from '@/domain/forum/enterprise/entities/value-objects/comment-with-author';
+import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository';
 
-export class InMemoryAnswerCommentsRepository
-implements AnswerCommentsRepository
-{
+export class InMemoryAnswerCommentsRepository implements AnswerCommentsRepository {
+
 	public items: AnswerComment[] = [];
+
+	constructor(private inMemoryStudentsRepository: InMemoryStudentsRepository) {}
 
 	async findById(id: string) {
 		const answerComment = this.items.find((item) => item.id.toString() === id);
@@ -21,6 +24,30 @@ implements AnswerCommentsRepository
 		const answerComments = this.items
 			.filter((item) => item.answerId.toString() === answerId)
 			.slice((page - 1) * 20, page * 20);
+
+		return answerComments;
+	}
+
+	async findManyByAnswerIdWithAuthor(answerId: string, { page }: PaginationParams) {
+		const answerComments = this.items
+			.filter((item) => item.answerId.toString() === answerId)
+			.slice((page - 1) * 20, page * 20)
+			.map(comment => {
+				const author = this.inMemoryStudentsRepository.items.find(item => item.id.equals(comment.authorId));
+
+				if (!author) {
+					throw new Error(`Author with ID "${comment.authorId.toString()}" doesn't exist.`); 
+				}
+
+				return CommentWithAuthor.create({
+					commentId: comment.id,
+					content: comment.content,
+					createdAt: comment.createdAt,
+					updatedAt: comment.updatedAt,
+					authorId: comment.authorId,
+					author: author.name
+				});
+			});
 
 		return answerComments;
 	}
