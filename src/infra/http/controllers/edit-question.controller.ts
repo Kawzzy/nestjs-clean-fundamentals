@@ -8,6 +8,7 @@ import { BadRequestException, Body, Controller, HttpCode, Param, Put, UsePipes }
 const editQuestionBodySchema = z.object({
 	title: z.string(),
 	content: z.string(),
+	attachmentsIds: z.array(z.string().uuid())
 });
 
 type EditQuestionBodySchema = z.infer<typeof editQuestionBodySchema>;
@@ -20,14 +21,14 @@ export class EditQuestionController {
     @HttpCode(204)
 	@UsePipes(new ZodValidationPipe(editQuestionBodySchema))
 	async handle(@Body() body: EditQuestionBodySchema, @CurrentUser() user: UserPayload, @Param('id') questionId: string) {
-		const { title, content } = body;
+		const { title, content, attachmentsIds } = body;
 		const userId = user.sub;
 
 		const result = await this.editQuestion.execute({
 			title,
 			content,
 			authorId: userId,
-			attachmentsIds: [],
+			attachmentsIds,
 			questionId
 		});
 
