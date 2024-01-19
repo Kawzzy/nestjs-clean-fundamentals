@@ -7,9 +7,7 @@ import { Answer } from '@/domain/forum/enterprise/entities/answer';
 export class InMemoryAnswersRepository implements AnswersRepository {
 	public items: Answer[] = [];
 
-	constructor(
-    private answerAttachmentsRepository: AnswerAttachmentsRepository,
-	) {}
+	constructor(private answerAttachmentsRepository: AnswerAttachmentsRepository) {}
 
 	async findById(id: string) {
 		const answer = this.items.find((item) => item.id.toString() === id);
@@ -32,6 +30,10 @@ export class InMemoryAnswersRepository implements AnswersRepository {
 	async create(answer: Answer) {
 		this.items.push(answer);
 
+		await this.answerAttachmentsRepository.createMany(
+			answer.attachments.getItems()
+		);
+
 		DomainEvents.dispatchEventsForAggregate(answer.id);
 	}
 
@@ -40,6 +42,14 @@ export class InMemoryAnswersRepository implements AnswersRepository {
 
 		this.items[itemIndex] = answer;
 
+		await this.answerAttachmentsRepository.createMany(
+			answer.attachments.getNewItems()
+		);
+		
+		await this.answerAttachmentsRepository.deleteMany(
+			answer.attachments.getRemovedItems()
+		);
+		
 		DomainEvents.dispatchEventsForAggregate(answer.id);
 	}
 
