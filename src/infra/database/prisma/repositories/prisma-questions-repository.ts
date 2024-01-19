@@ -4,11 +4,15 @@ import { Question } from '@/domain/forum/enterprise/entities/question';
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { PrismaQuestionMapper } from '../mappers/prisma-question.mapper';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { PrismaQuestionAttachmentsRepository } from './prisma-question-attachments-repository';
 
 @Injectable()
 export class PrismaQuestionsRepository implements QuestionsRepository {
 	
-	constructor(private prismaConnection: PrismaService) {}
+	constructor(
+		private prismaConnection: PrismaService,
+		private questionAttachmentsRepository: PrismaQuestionAttachmentsRepository
+	) {}
 
 	async findById(id: string): Promise<Question | null> {
 		const question = await this.prismaConnection.question.findUnique({
@@ -45,12 +49,20 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
 	async save(question: Question): Promise<void> {
 		const data = PrismaQuestionMapper.toPrisma(question);
 	
-		await this.prismaConnection.question.update({
-			where: {
-				id: data.id
-			},
-			data
-		});
+		await Promise.all([
+			this.prismaConnection.question.update({
+				where: {
+					id: data.id
+				},
+				data
+			}),
+			this.questionAttachmentsRepository.createMany(
+				question.attachments.getNewItems()
+			),
+			this.questionAttachmentsRepository.deleteMany(
+				question.attachments.getRemovedItems()
+			)
+		]);
 	}
 	
 	async create(question: Question): Promise<void> {
@@ -59,6 +71,10 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
 		await this.prismaConnection.question.create({
 			data
 		});
+
+		await this.questionAttachmentsRepository.createMany(
+			question.attachments.getItems()
+		);
 	}
 
 	async delete(question: Question): Promise<void> {
