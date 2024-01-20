@@ -10,3 +10,13 @@ services:
       POSTGRES_USER: docker
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: nestjs-clean
+
+  cache:
+    container_name: nestjs-clean-cache
+    image: bitnami/redis
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=docker
+    volumes:
+      - ./data/redis:/data

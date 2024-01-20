@@ -3,18 +3,18 @@ import { PrismaService } from '../prisma.service';
 import { Question } from '@/domain/forum/enterprise/entities/question';
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { PrismaQuestionMapper } from '../mappers/prisma-question.mapper';
+import { RedisCacheRepository } from '@/infra/cache/redis/redis-cache-repository';
 import { PrismaQuestionDetailsMapper } from '../mappers/prisma-question-details.mapper';
 import { PrismaQuestionAttachmentsRepository } from './prisma-question-attachments-repository';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
 import { QuestionDetails } from '@/domain/forum/enterprise/entities/value-objects/question-details';
-import { CacheRepository } from '@/infra/cache/cache-repository';
 
 @Injectable()
 export class PrismaQuestionsRepository implements QuestionsRepository {
 	
 	constructor(
 		private prismaConnection: PrismaService,
-		private cacheRepository: CacheRepository,
+		private cacheRepository: RedisCacheRepository,
 		private questionAttachmentsRepository: PrismaQuestionAttachmentsRepository
 	) {}
 
