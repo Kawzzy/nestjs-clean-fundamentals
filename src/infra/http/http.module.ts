@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { R2Storage } from '../storage/r2-storage';
+import { EventsModule } from '../events/events.module';
 import { StorageModule } from '../storage/storage.module';
 import { DatabaseModule } from '../database/database.module';
 import { JwtEncrypter } from '../cryptography/jwt-encrypter';
@@ -35,6 +36,7 @@ import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/com
 import { FetchQuestionAnswersController } from './controllers/fetch-question-answers.controller';
 import { FetchRecentQuestionsController } from './controllers/fetch-recent-questions.controller';
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-repository';
+import { OnAnswerCreated } from '@/domain/notification/application/subscribers/on-answer-created';
 import { DeleteQuestionCommentController } from './controllers/delete-question-comment.controller';
 import { FetchQuestionCommentsController } from './controllers/fetch-question-comments.controller';
 import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
@@ -47,6 +49,7 @@ import { AttachmentsRepository } from '@/domain/forum/application/repositories/a
 import { DeleteAnswerCommentUseCase } from '@/domain/forum/application/use-cases/delete-answer-comment';
 import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-comments';
 import { PrismaQuestionsRepository } from '../database/prisma/repositories/prisma-questions-repository';
+import { SendNotificationUseCase } from '@/domain/notification/application/use-cases/send-notification';
 import { FetchQuestionAnswersUseCase } from '@/domain/forum/application/use-cases/fetch-question-answers';
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions';
 import { ChooseQuestionBestAnswerController } from './controllers/choose-question-best-answer.controller';
@@ -54,6 +57,8 @@ import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cas
 import { FetchQuestionCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-question-comments';
 import { PrismaAttachmentsRepository } from '../database/prisma/repositories/prisma-attachments-repository';
 import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository';
+import { PrismaNotificationsRepository } from '../database/prisma/repositories/prisma-notification-repository';
+import { NotificationsRepository } from '@/domain/notification/application/repositories/notifications-repository';
 import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository';
 import { ChooseQuestionBestAnswerUseCase } from '@/domain/forum/application/use-cases/choose-question-best-answer';
 import { PrismaAnswerCommentsRepository } from '../database/prisma/repositories/prisma-answer-comments-repository';
@@ -66,6 +71,7 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 
 @Module({
 	imports: [
+		EventsModule,
 		StorageModule,
 		DatabaseModule,
 		CryptographyModule
@@ -224,6 +230,18 @@ import { PrismaQuestionAttachmentsRepository } from '../database/prisma/reposito
 				return new UploadAndCreateAttachmentUseCase(attachmentsRepository, uploader);
 			},
 			inject: [PrismaAttachmentsRepository, R2Storage]
+		}, {
+			provide: SendNotificationUseCase,
+			useFactory: (notificationsRepository: NotificationsRepository) => {
+				return new SendNotificationUseCase(notificationsRepository);
+			},
+			inject: [PrismaNotificationsRepository]
+		}, {
+			provide: OnAnswerCreated,
+			useFactory: (questionsRepository: QuestionsRepository, sendNotification: SendNotificationUseCase) => {
+				return new OnAnswerCreated(questionsRepository, sendNotification);
+			},
+			inject: [PrismaQuestionsRepository, PrismaNotificationsRepository]
 		}
 	]
 })

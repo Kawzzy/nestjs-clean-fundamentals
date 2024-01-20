@@ -19,9 +19,10 @@ model User {
   password String
   role     UserRole @default(STUDENT)
 
-  questions Question[]
-  answers   Answer[]
-  comments  Comment[]
+  questions     Question[]
+  answers       Answer[]
+  comments      Comment[]
+  notifications Notification[]
 }
 
 model Question {
@@ -52,8 +53,9 @@ model Answer {
   authorId String
   author   User   @relation(fields: [authorId], references: [id])
 
-  questionId   String
-  question     Question     @relation(fields: [questionId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+
   bestAnswerOn Question?    @relation("bestAnswer")
   comments     Comment[]
   attachments  Attachment[]
@@ -85,4 +87,15 @@ model Attachment {
 
   answerId String?
   answer   Answer? @relation(fields: [answerId], references: [id])
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  recipientId String
+  recipient   User   @relation(fields: [recipientId], references: [id])
 }
