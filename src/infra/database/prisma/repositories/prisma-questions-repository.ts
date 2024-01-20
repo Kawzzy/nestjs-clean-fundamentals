@@ -3,8 +3,10 @@ import { PrismaService } from '../prisma.service';
 import { Question } from '@/domain/forum/enterprise/entities/question';
 import { PaginationParams } from '@/core/repositories/pagination-params';
 import { PrismaQuestionMapper } from '../mappers/prisma-question.mapper';
-import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { PrismaQuestionDetailsMapper } from '../mappers/prisma-question-details.mapper';
 import { PrismaQuestionAttachmentsRepository } from './prisma-question-attachments-repository';
+import { QuestionsRepository } from '@/domain/forum/application/repositories/questions-repository';
+import { QuestionDetails } from '@/domain/forum/enterprise/entities/value-objects/question-details';
 
 @Injectable()
 export class PrismaQuestionsRepository implements QuestionsRepository {
@@ -32,6 +34,20 @@ export class PrismaQuestionsRepository implements QuestionsRepository {
 		});
 
 		return question ? PrismaQuestionMapper.toDomain(question) : null;
+	}
+
+	async findDetailsBySlug(slug: string): Promise<QuestionDetails | null> {
+		const question = await this.prismaConnection.question.findUnique({
+			where: {
+				slug
+			},
+			include: {
+				author: true,
+				attachments: true
+			}
+		});
+
+		return question ? PrismaQuestionDetailsMapper.toDomain(question) : null;
 	}
 
 	async findManyRecent({ page }: PaginationParams): Promise<Question[]> {
